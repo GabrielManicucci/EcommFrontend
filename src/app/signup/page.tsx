@@ -1,48 +1,48 @@
-"use client"
-import Link from "next/link"
-import { FcGoogle } from "react-icons/fc"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
+"use client";
+import Link from "next/link";
+import { FcGoogle } from "react-icons/fc";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 const schema = z.object({
   name: z
     .string()
     .toLowerCase()
     .nonempty({ message: "O nome é obrigatório" })
-    .transform(name =>
+    .transform((name) =>
       name
         .trim()
         .split(" ")
-        .map(word => word[0].toLocaleUpperCase().concat(word.substring(1)))
+        .map((word) => word[0].toLocaleUpperCase().concat(word.substring(1)))
         .join(" ")
     ),
   email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Must be 8 or more characters long" })
-})
+  password: z.string().min(8, { message: "Must be 8 or more characters long" }),
+});
 
-type UserSchema = z.infer<typeof schema>
+type UserSchema = z.infer<typeof schema>;
 
 export default function SignUp() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<UserSchema>({
-    resolver: zodResolver(schema)
-  })
+    resolver: zodResolver(schema),
+  });
 
   async function signup(formData: object) {
     const res = await fetch("http://localhost:5555/user/signup", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData)
-    })
+      body: JSON.stringify(formData),
+    });
 
     // const data = await res.json()
-    console.log(`${res.statusText} - ${res.status}`)
+    console.log(`${res.statusText} - ${res.status}`);
   }
 
   return (
@@ -124,5 +124,5 @@ export default function SignUp() {
         </form>
       </div>
     </div>
-  )
+  );
 }

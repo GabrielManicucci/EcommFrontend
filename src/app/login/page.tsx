@@ -1,37 +1,37 @@
-"use client"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { FcGoogle } from "react-icons/fc"
-import Link from "next/link"
+"use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { FcGoogle } from "react-icons/fc";
+import Link from "next/link";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Must be 8 or more characters long" })
-})
+  password: z.string().min(8, { message: "Must be 8 or more characters long" }),
+});
 
-type UserSchema = z.infer<typeof schema>
+type UserSchema = z.infer<typeof schema>;
 
 export default function Login() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<UserSchema>({
-    resolver: zodResolver(schema)
-  })
+    resolver: zodResolver(schema),
+  });
 
   async function login(formData: object) {
     const res = await fetch("http://localhost:5555/user/session", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData)
-    })
+      body: JSON.stringify(formData),
+    });
 
-    const data = await res.json()
-    console.log(data)
+    const data = await res.json();
+    console.log(data);
   }
 
   return (
@@ -101,5 +101,5 @@ export default function Login() {
         </form>
       </div>
     </div>
-  )
+  );
 }
