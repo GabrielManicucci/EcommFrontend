@@ -1,18 +1,29 @@
 "use client";
+import Link from "next/link";
+import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FcGoogle } from "react-icons/fc";
-import Link from "next/link";
 
 const schema = z.object({
+  name: z
+    .string()
+    .toLowerCase()
+    .nonempty({ message: "O nome é obrigatório" })
+    .transform((name) =>
+      name
+        .trim()
+        .split(" ")
+        .map((word) => word[0].toLocaleUpperCase().concat(word.substring(1)))
+        .join(" ")
+    ),
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(8, { message: "Must be 8 or more characters long" }),
 });
 
 type UserSchema = z.infer<typeof schema>;
 
-export default function Login() {
+export default function SignUp() {
   const {
     register,
     handleSubmit,
@@ -21,8 +32,8 @@ export default function Login() {
     resolver: zodResolver(schema),
   });
 
-  async function login(formData: object) {
-    const res = await fetch("http://localhost:5555/user/session", {
+  async function signup(formData: object) {
+    const res = await fetch("http://localhost:5555/user/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,18 +41,21 @@ export default function Login() {
       body: JSON.stringify(formData),
     });
 
-    const data = await res.json();
-    console.log(data);
+    // const data = await res.json()
+    console.log(`${res.statusText} - ${res.status}`);
   }
 
   return (
     <div>
       <header className="border-b border-gray-500 p-5 text-center">
         <p>
-          Login or{" "}
-          <Link className="border-b" href={"/signup"}>
-            sign up
-          </Link>{" "}
+          <Link
+            className="border-b border-slate-500 dark:border-slate-400"
+            href={"/login"}
+          >
+            Log in{" "}
+          </Link>
+          or sign up
         </p>
       </header>
 
@@ -50,14 +64,26 @@ export default function Login() {
         <form
           className="px-5 flex flex-col justify-center items-center"
           action=""
-          onSubmit={handleSubmit(login)}
+          onSubmit={handleSubmit(signup)}
         >
           <div className="flex flex-col w-11/12">
             <div className="flex flex-col mb-3">
               <input
                 className="p-2 mb-1 bg-stone-700 rounded-md"
                 type="text"
-                id="email"
+                placeholder="Name"
+                {...register("name")}
+              />
+              {errors.name && (
+                <span className="text-red-500 text-sm">
+                  {errors.name.message}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col mb-3">
+              <input
+                className="p-2 mb-1 bg-stone-700 rounded-md"
+                type="text"
                 placeholder="Email"
                 {...register("email")}
               />
@@ -69,9 +95,8 @@ export default function Login() {
             </div>
             <div className="flex flex-col">
               <input
-                className="p-2 bg-stone-700 rounded-md"
-                type="password"
-                id="password"
+                className="p-2 mb-1 bg-stone-700 rounded-md"
+                type="text"
                 placeholder="Password"
                 {...register("password")}
               />
@@ -81,9 +106,10 @@ export default function Login() {
                 </span>
               )}
             </div>
+
             <input
               type="submit"
-              value="Login"
+              value="Signup"
               className="p-3 bg-gray-200 rounded-md mt-5 text-gray-950 font-medium"
             />
           </div>
